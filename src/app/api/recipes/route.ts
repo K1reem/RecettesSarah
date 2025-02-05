@@ -1,6 +1,26 @@
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 
+interface Ingredient {
+  name: string
+  amount: number
+  unit: string
+}
+
+interface Step {
+  description: string
+  order: number
+  timer: number | null
+}
+
+interface RecipeInput {
+  title: string
+  categoryId: number
+  imageUrl: string | null
+  ingredients: Ingredient[]
+  steps: Step[]
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -29,7 +49,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const json = await request.json()
+    const json = await request.json() as RecipeInput
 
     const recipe = await prisma.recipe.create({
       data: {
@@ -41,14 +61,14 @@ export async function POST(request: Request) {
         servings: 1, // Valeur par défaut
         isFavorite: false,
         ingredients: {
-          create: json.ingredients.map((ingredient: any) => ({
+          create: json.ingredients.map((ingredient: Ingredient) => ({
             name: ingredient.name,
             amount: ingredient.amount,
             unit: ingredient.unit,
           })),
         },
         steps: {
-          create: json.steps.map((step: any) => ({
+          create: json.steps.map((step: Step) => ({
             description: step.description,
             order: step.order,
             timer: step.timer || null,

@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 import { useState, useEffect } from 'react'
 import { PageTitle } from '@/components/ui/page-title'
@@ -40,19 +39,17 @@ export default function RecipesPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <PageTitle>Mes Recettes</PageTitle>
+      
+      <div className="space-y-3.5">
+        {recipes.map((recipe) => (
+          <Card key={recipe.id} recipe={recipe} />
+        ))}
 
-      <div className="bg-white rounded-lg shadow-sm p-3.5">
-        <div className="space-y-3.5">
-          {recipes.map((recipe) => (
-            <Card key={recipe.id} recipe={recipe} />
-          ))}
-
-          {recipes.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-sm text-gray-500">Aucune recette pour le moment</p>
-            </div>
-          )}
-        </div>
+        {recipes.length === 0 && (
+          <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+            <p className="text-sm text-gray-500">Aucune recette pour le moment</p>
+          </div>
+        )}
       </div>
     </div>
   )

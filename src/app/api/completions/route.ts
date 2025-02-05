@@ -1,43 +1,43 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
-
-const prisma = new PrismaClient()
 
 // GET /api/completions - Récupère toutes les completions de recettes
 export async function GET() {
   try {
-    const completions = await prisma.$queryRaw`
-      SELECT * FROM RecipeCompletion 
-      ORDER BY date DESC
-    `
+    const completions = await prisma.recipeCompletion.findMany({
+      include: {
+        recipe: true,
+      },
+      orderBy: {
+        date: 'desc',
+      },
+    })
+
     return NextResponse.json(completions)
   } catch (error) {
     console.error('Erreur lors de la récupération des completions:', error)
-    return NextResponse.json(
-      { error: 'Erreur lors de la récupération des completions' },
-      { status: 500 }
-    )
+    return new NextResponse('Erreur lors de la récupération des completions', { status: 500 })
   }
 }
 
 // POST /api/completions - Crée une nouvelle completion de recette
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-    const { recipeId, duration, notes, rating } = body
+    const json = await request.json()
+    const completion = await prisma.recipeCompletion.create({
+      data: {
+        recipeId: json.recipeId,
+        date: new Date(),
+      },
+      include: {
+        recipe: true,
+      },
+    })
 
-    const completion = await prisma.$executeRaw`
-      INSERT INTO RecipeCompletion (recipeId, duration, notes, rating, date)
-      VALUES (${recipeId}, ${duration}, ${notes}, ${rating}, datetime('now'))
-    `
-
-    return NextResponse.json({ success: true })
+    return NextResponse.json(completion)
   } catch (error) {
     console.error('Erreur lors de la création de la completion:', error)
-    return NextResponse.json(
-      { error: 'Erreur lors de la création de la completion' },
-      { status: 500 }
-    )
+    return new NextResponse('Erreur lors de la création de la completion', { status: 500 })
   }
 }
 

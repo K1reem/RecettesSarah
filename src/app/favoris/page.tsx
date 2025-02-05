@@ -43,32 +43,28 @@ export default function FavoritesPage() {
       <PageTitle>Mes Favoris</PageTitle>
 
       {recipes.length > 0 ? (
-        <div className="bg-white rounded-lg shadow-sm p-3.5">
-          <div className="space-y-3.5">
-            {recipes.map((recipe) => (
-              <Card key={recipe.id} recipe={recipe} showFavorite={true} />
-            ))}
-          </div>
+        <div className="space-y-3.5">
+          {recipes.map((recipe) => (
+            <Card key={recipe.id} recipe={recipe} showFavorite={true} />
+          ))}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm p-3.5 text-center">
-          <div className="py-12">
-            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Book className="w-6 h-6 text-gray-400" />
-            </div>
-            <h2 className="text-base font-semibold text-gray-900 mb-2">
-              Aucun favori pour le moment
-            </h2>
-            <p className="text-sm text-gray-500 mb-6">
-              Ajoutez des recettes à vos favoris pour les retrouver facilement ici
-            </p>
-            <Link
-              href="/recettes"
-              className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
-              Découvrir les recettes
-            </Link>
+        <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Book className="w-6 h-6 text-gray-400" />
           </div>
+          <h2 className="text-base font-semibold text-gray-900 mb-2">
+            Aucun favori pour le moment
+          </h2>
+          <p className="text-sm text-gray-500 mb-6">
+            Ajoutez des recettes à vos favoris pour les retrouver facilement ici
+          </p>
+          <Link
+            href="/recettes"
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          >
+            Découvrir les recettes
+          </Link>
         </div>
       )}
     </div>

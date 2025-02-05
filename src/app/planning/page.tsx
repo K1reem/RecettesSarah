@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { Plus, Calendar, Trash2 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
-import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { PageTitle } from '@/components/ui/page-title'
 
@@ -25,7 +24,6 @@ interface ScheduledRecipe {
 }
 
 export default function PlanningPage() {
-  const router = useRouter()
   const [scheduledRecipes, setScheduledRecipes] = useState<ScheduledRecipe[]>([])
 
   useEffect(() => {
@@ -56,7 +54,7 @@ export default function PlanningPage() {
   }
 
   return (
-    <div className="mx-4 space-y-6">
+    <div className="container mx-auto px-4 py-8">
       <PageTitle>Planning des repas</PageTitle>
 
       {scheduledRecipes.length === 0 ? (
@@ -77,7 +75,7 @@ export default function PlanningPage() {
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {scheduledRecipes.map((schedule) => (
             <div key={schedule.id} className="space-y-2">
               <div className="flex items-center gap-2">

@@ -92,7 +92,7 @@ export function CookingMode({ steps, onExit }: CookingModeProps) {
       })
       onExit()
     } catch (error) {
-      console.error('Erreur lors de l\'enregistrement de la réalisation:', error)
+      console.error('Erreur lors de l&apos;enregistrement de la réalisation:', error)
     }
   }
 
@@ -203,6 +203,12 @@ export function CookingMode({ steps, onExit }: CookingModeProps) {
           </button>
         </div>
       </footer>
+
+      <div className="text-center py-12">
+        <p className="text-gray-500">
+          L&apos;étape est terminée
+        </p>
+      </div>
     </div>
   )
 } 
