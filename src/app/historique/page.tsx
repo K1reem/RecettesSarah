@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { RecipeCompletion } from '@/types/recipe'
 import { HistoryCard } from '@/components/ui/history-card'
+import { PageTitle } from '@/components/ui/page-title'
 
 export default function HistoriquePage() {
   const [completions, setCompletions] = useState<RecipeCompletion[]>([])
@@ -37,23 +38,27 @@ export default function HistoriquePage() {
   }
 
   return (
-    <div className="mx-4 space-y-6">
-      <h1 className="text-xl font-semibold">Historique des réalisations</h1>
+    <div className="container mx-auto px-4 py-8">
+      <PageTitle>Historique des réalisations</PageTitle>
       
-      <div className="grid gap-4">
-        {completions.map((completion) => (
-          <HistoryCard
-            key={completion.id}
-            completion={completion}
-            onDelete={handleDelete}
-          />
-        ))}
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="space-y-4">
+          {completions.map((completion) => (
+            <HistoryCard
+              key={completion.id}
+              completion={completion}
+              onDelete={handleDelete}
+            />
+          ))}
 
-        {completions.length === 0 && (
-          <p className="text-center text-gray-500">
-            Aucune réalisation enregistrée
-          </p>
-        )}
+          {completions.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-500">
+                Aucune réalisation enregistrée
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

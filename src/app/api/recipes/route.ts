@@ -35,9 +35,11 @@ export async function POST(request: Request) {
       data: {
         title: json.title,
         categoryId: json.categoryId,
-        prepTime: json.prepTime,
-        cookTime: json.cookTime,
-        servings: json.servings,
+        imageUrl: json.imageUrl || null,
+        prepTime: 0, // Valeur par défaut
+        cookTime: 0, // Valeur par défaut
+        servings: 1, // Valeur par défaut
+        isFavorite: false,
         ingredients: {
           create: json.ingredients.map((ingredient: any) => ({
             name: ingredient.name,
@@ -49,7 +51,7 @@ export async function POST(request: Request) {
           create: json.steps.map((step: any) => ({
             description: step.description,
             order: step.order,
-            isCompleted: false,
+            timer: step.timer || null,
           })),
         },
       },
@@ -67,6 +69,9 @@ export async function POST(request: Request) {
     return NextResponse.json(recipe)
   } catch (error) {
     console.error('Erreur lors de la création de la recette:', error)
-    return new NextResponse('Erreur lors de la création de la recette', { status: 500 })
+    if (error instanceof Error) {
+      return NextResponse.json({ message: error.message }, { status: 500 })
+    }
+    return NextResponse.json({ message: 'Erreur lors de la création de la recette' }, { status: 500 })
   }
 } 

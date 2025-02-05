@@ -28,43 +28,70 @@ export function RecipeForm({ categories }: RecipeFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [ingredients, setIngredients] = useState<Ingredient[]>([{ id: 1, name: '', amount: '', unit: '' }])
   const [steps, setSteps] = useState<Step[]>([{ id: 1, description: '' }])
-  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [imageFile, setImageFile] = useState<File | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
     setIsSubmitting(true)
 
     try {
-      const formData = new FormData(e.currentTarget)
+      // Récupérer les données du formulaire
+      const formElement = event.currentTarget
+      const formData = new FormData(formElement)
+      let imageUrl = null
+
+      // Gérer l'upload de l'image
+      if (imageFile) {
+        const imageFormData = new FormData()
+        imageFormData.append('file', imageFile)
+        
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: imageFormData,
+        })
+        
+        if (!uploadResponse.ok) throw new Error('Erreur lors du téléchargement de l\'image')
+        
+        const imageData = await uploadResponse.json()
+        imageUrl = imageData.url
+      }
+
+      // Créer l'objet de données de la recette
+      const recipeData = {
+        title: formData.get('title'),
+        categoryId: parseInt(formData.get('categoryId') as string),
+        imageUrl,
+        ingredients: ingredients.map(i => ({
+          name: i.name,
+          amount: parseFloat(i.amount),
+          unit: i.unit
+        })),
+        steps: steps.map((s, index) => ({
+          description: s.description,
+          order: index + 1,
+          timer: s.timer || null
+        }))
+      }
+
+      // Envoyer les données de la recette
       const response = await fetch('/api/recipes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          title: formData.get('title'),
-          categoryId: parseInt(formData.get('categoryId') as string),
-          prepTime: parseInt(formData.get('prepTime') as string),
-          cookTime: parseInt(formData.get('cookTime') as string),
-          servings: parseInt(formData.get('servings') as string),
-          imageUrl,
-          ingredients: ingredients.map(i => ({
-            name: i.name,
-            amount: parseFloat(i.amount),
-            unit: i.unit
-          })),
-          steps: steps.map((s, index) => ({
-            description: s.description,
-            order: index + 1,
-            timer: s.timer
-          }))
-        }),
+        body: JSON.stringify(recipeData),
       })
 
-      if (!response.ok) throw new Error('Erreur lors de la création de la recette')
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Erreur lors de la création de la recette')
+      }
+
       router.push('/recettes')
+      router.refresh()
     } catch (error) {
       console.error('Erreur:', error)
+      alert(error instanceof Error ? error.message : "Une erreur s'est produite lors de la création de la recette")
     } finally {
       setIsSubmitting(false)
     }
@@ -105,11 +132,16 @@ export function RecipeForm({ categories }: RecipeFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
-      <section className="bg-white rounded-lg shadow-sm p-6 space-y-4">
-        <h2 className="text-lg font-bold text-gray-900">Informations générales</h2>
-        <div className="space-y-4">
-          <div className="space-y-2">
+    <form onSubmit={handleSubmit} className="space-y-3.5">
+      <div className="bg-white rounded-lg shadow-sm p-3.5">
+        <ImageUpload
+          imageUrl={null}
+          onImageChange={(file) => setImageFile(file)}
+          className="mb-3.5"
+        />
+
+        <div className="space-y-3.5">
+          <div>
             <label htmlFor="title" className="block text-sm font-semibold text-gray-900">
               Titre de la recette
             </label>
@@ -123,7 +155,7 @@ export function RecipeForm({ categories }: RecipeFormProps) {
             />
           </div>
 
-          <div className="space-y-2">
+          <div>
             <label htmlFor="categoryId" className="block text-sm font-semibold text-gray-900">
               Catégorie
             </label>
@@ -141,69 +173,8 @@ export function RecipeForm({ categories }: RecipeFormProps) {
               ))}
             </select>
           </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-900">
-              Image de la recette
-            </label>
-            <ImageUpload onChange={setImageUrl} value={imageUrl} />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="prepTime" className="block text-sm font-semibold text-gray-900">
-                Temps de préparation
-              </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  name="prepTime"
-                  id="prepTime"
-                  min="0"
-                  required
-                  placeholder="30"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">min</span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="cookTime" className="block text-sm font-semibold text-gray-900">
-                Temps de cuisson
-              </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  name="cookTime"
-                  id="cookTime"
-                  min="0"
-                  required
-                  placeholder="45"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">min</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="servings" className="block text-sm font-semibold text-gray-900">
-              Nombre de portions
-            </label>
-            <input
-              type="number"
-              name="servings"
-              id="servings"
-              min="1"
-              required
-              defaultValue="4"
-              placeholder="4"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
         </div>
-      </section>
+      </div>
 
       <section className="bg-white rounded-lg shadow-sm p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">Ingrédients</h2>

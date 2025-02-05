@@ -5,6 +5,7 @@ import { Plus, Calendar, Trash2 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
+import { PageTitle } from '@/components/ui/page-title'
 
 interface ScheduledRecipe {
   id: number
@@ -56,7 +57,7 @@ export default function PlanningPage() {
 
   return (
     <div className="mx-4 space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Planning des repas</h1>
+      <PageTitle>Planning des repas</PageTitle>
 
       {scheduledRecipes.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg shadow-sm">

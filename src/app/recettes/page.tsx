@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 import { useState, useEffect } from 'react'
+import { PageTitle } from '@/components/ui/page-title'
 
 interface Recipe {
   id: number
@@ -37,19 +38,21 @@ export default function RecipesPage() {
   }, [])
 
   return (
-    <div className="mx-4 space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Mes Recettes</h1>
+    <div className="container mx-auto px-4 py-8">
+      <PageTitle>Mes Recettes</PageTitle>
 
-      <div className="space-y-4">
-        {recipes.map((recipe) => (
-          <Card key={recipe.id} recipe={recipe} />
-        ))}
+      <div className="bg-white rounded-lg shadow-sm p-3.5">
+        <div className="space-y-3.5">
+          {recipes.map((recipe) => (
+            <Card key={recipe.id} recipe={recipe} />
+          ))}
 
-        {recipes.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-sm text-gray-500">Aucune recette pour le moment</p>
-          </div>
-        )}
+          {recipes.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-sm text-gray-500">Aucune recette pour le moment</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
