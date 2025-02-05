@@ -1,4 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RecettesSarah
+
+Application de gestion de recettes de cuisine développée avec Next.js.
+
+## Fonctionnalités
+
+- Gestion des recettes (création, modification, suppression)
+- Gestion des favoris
+- Planning des repas
+- Historique des réalisations
+- Upload d'images
+- Mode préparation pas à pas
+
+## Technologies utilisées
+
+- Next.js
+- Prisma
+- Tailwind CSS
+- TypeScript
 
 ## Getting Started
 
