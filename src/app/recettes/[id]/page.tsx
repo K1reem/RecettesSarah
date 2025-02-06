@@ -1,8 +1,8 @@
 import { prisma } from '@/lib/prisma'
-import { ArrowLeft, Clock, Users } from 'lucide-react'
+import { ArrowLeft, Clock, Users, Edit, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { FavoriteButton, StartCookingButton } from '.'
+import { FavoriteButton, StartCookingButton, DeleteButton } from '.'
 import { PageTitle } from '@/components/ui/page-title'
 import { RecipeImage } from '@/components/ui/recipe-image'
 import { Ingredient, Step } from '@/types/recipe'
@@ -45,7 +45,17 @@ export default async function RecipePage({ params }: { params: { id: string } })
           <div className="flex-1">
             <PageTitle>{recipe.title}</PageTitle>
           </div>
-          <FavoriteButton recipeId={recipe.id} isFavorite={recipe.isFavorite} />
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/recettes/${recipe.id}/modifier`}
+              className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100"
+              title="Modifier la recette"
+            >
+              <Edit className="w-5 h-5 text-gray-600" />
+            </Link>
+            <DeleteButton recipeId={recipe.id} />
+            <FavoriteButton recipeId={recipe.id} isFavorite={recipe.isFavorite} />
+          </div>
         </div>
 
         <div className="space-y-3.5">

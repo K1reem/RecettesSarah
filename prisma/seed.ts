@@ -1,46 +1,29 @@
-const { PrismaClient } = require('@prisma/client')
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  // Supprime toutes les catégories existantes
-  await prisma.category.deleteMany()
-
-  // Crée les nouvelles catégories
+  // Créer les catégories de base
   const categories = [
-    {
-      name: 'Petit déjeuner',
-      icon: '🍳',
-    },
-    {
-      name: 'Déjeuner',
-      icon: '🥗',
-    },
-    {
-      name: 'Dîner',
-      icon: '🍽️',
-    },
-    {
-      name: 'Dessert',
-      icon: '🍰',
-    },
-    {
-      name: 'Snack',
-      icon: '🥨',
-    },
-    {
-      name: 'Boisson',
-      icon: '🥤',
-    },
+    { name: 'Entrées', icon: '🥗' },
+    { name: 'Plats', icon: '🍽️' },
+    { name: 'Desserts', icon: '🍰' },
+    { name: 'Boissons', icon: '🥤' },
+    { name: 'Apéritifs', icon: '🥨' },
+    { name: 'Sauces', icon: '🥫' },
   ]
 
+  console.log('Création des catégories...')
+  
   for (const category of categories) {
-    await prisma.category.create({
-      data: category,
+    await prisma.category.upsert({
+      where: { name: category.name },
+      update: {},
+      create: category,
     })
   }
 
-  console.log('Les catégories ont été créées avec succès !')
+  console.log('Base de données initialisée !')
 }
 
 main()
