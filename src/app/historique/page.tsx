@@ -41,8 +41,8 @@ export default function HistoriquePage() {
     <div className="container mx-auto px-4 py-8">
       <PageTitle>Historique des réalisations</PageTitle>
       
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="space-y-4">
+      <div className="bg-white rounded-lg shadow-sm p-3.5">
+        <div className="space-y-3.5">
           {completions.map((completion) => (
             <HistoryCard
               key={completion.id}

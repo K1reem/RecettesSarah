@@ -1,9 +1,9 @@
 'use client'
 
 import { Category } from '@/types/recipe'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, X } from 'lucide-react'
+import { Plus, X, Clock } from 'lucide-react'
 import { ImageUpload } from '@/components/ui/image-upload'
 
 interface Ingredient {
@@ -18,6 +18,7 @@ interface Step {
   description: string
   timer?: number
   timerUnit?: string
+  showTimer?: boolean
 }
 
 interface Recipe {
@@ -159,11 +160,19 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
     }
   }
 
-  const updateStep = (id: number, field: keyof Step, value: string | number) => {
+  const updateStep = (id: number, field: keyof Step, value: string | number | boolean) => {
     setSteps(steps.map(s => 
       s.id === id ? { ...s, [field]: value } : s
     ))
   }
+
+  useEffect(() => {
+    const textareas = document.querySelectorAll('textarea')
+    textareas.forEach(textarea => {
+      textarea.style.height = 'auto'
+      textarea.style.height = textarea.scrollHeight + 'px'
+    })
+  }, [steps])
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3.5">
@@ -176,7 +185,7 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
 
         <div className="space-y-3.5">
           <div>
-            <label htmlFor="title" className="block text-sm font-semibold text-gray-900">
+            <label htmlFor="title" className="block text-base font-semibold text-gray-900">
               Titre de la recette
             </label>
             <input
@@ -185,12 +194,12 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
               id="title"
               required
               defaultValue={recipe.title}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label htmlFor="categoryId" className="block text-sm font-semibold text-gray-900">
+            <label htmlFor="categoryId" className="block text-base font-semibold text-gray-900">
               Catégorie
             </label>
             <select
@@ -198,7 +207,7 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
               id="categoryId"
               required
               defaultValue={recipe.categoryId}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="">Sélectionner une catégorie</option>
               {categories.map((category) => (
@@ -211,7 +220,7 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
 
           <div className="space-y-3.5">
             <div className="w-full">
-              <label htmlFor="prepTime" className="block text-sm font-semibold text-gray-900">
+              <label htmlFor="prepTime" className="block text-base font-semibold text-gray-900">
                 Temps de préparation
               </label>
               <div className="mt-1 relative">
@@ -222,11 +231,11 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
                   required
                   min="0"
                   defaultValue={recipe.prepTime}
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                  className="block w-full rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900"
                 />
                 <select
                   name="prepTimeUnit"
-                  className="absolute right-0 top-0 h-full w-20 rounded-r-md border-l border-gray-300 bg-gray-50 px-2 text-gray-900"
+                  className="absolute right-0 top-0 h-10 w-20 rounded-r-md border-l border-gray-300 bg-gray-50 pl-3.5 pr-2.5 text-gray-900"
                 >
                   <option value="min">min</option>
                   <option value="hrs">hrs</option>
@@ -235,7 +244,7 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
             </div>
 
             <div className="w-full">
-              <label htmlFor="cookTime" className="block text-sm font-semibold text-gray-900">
+              <label htmlFor="cookTime" className="block text-base font-semibold text-gray-900">
                 Temps de cuisson
               </label>
               <div className="mt-1 relative">
@@ -246,11 +255,11 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
                   required
                   min="0"
                   defaultValue={recipe.cookTime}
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                  className="block w-full rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900"
                 />
                 <select
                   name="cookTimeUnit"
-                  className="absolute right-0 top-0 h-full w-20 rounded-r-md border-l border-gray-300 bg-gray-50 px-2 text-gray-900"
+                  className="absolute right-0 top-0 h-10 w-20 rounded-r-md border-l border-gray-300 bg-gray-50 pl-3.5 pr-2.5 text-gray-900"
                 >
                   <option value="min">min</option>
                   <option value="hrs">hrs</option>
@@ -259,7 +268,7 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
             </div>
 
             <div className="w-full">
-              <label htmlFor="servings" className="block text-sm font-semibold text-gray-900">
+              <label htmlFor="servings" className="block text-base font-semibold text-gray-900">
                 Nombre de portions
               </label>
               <div className="mt-1 relative">
@@ -270,11 +279,11 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
                   required
                   min="1"
                   defaultValue={recipe.servings}
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                  className="block w-full rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900"
                 />
                 <select
                   name="servingsUnit"
-                  className="absolute right-0 top-0 h-full w-20 rounded-r-md border-l border-gray-300 bg-gray-50 px-2 text-gray-900 appearance-none"
+                  className="absolute right-0 top-0 h-10 w-20 rounded-r-md border-l border-gray-300 bg-gray-50 pl-3.5 pr-2.5 text-gray-900 appearance-none"
                 >
                   <option value="pers">pers</option>
                 </select>
@@ -284,9 +293,9 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
         </div>
       </div>
 
-      <section className="bg-white rounded-lg shadow-sm p-6 space-y-4">
+      <section className="bg-white rounded-lg shadow-sm p-3.5 space-y-3.5">
         <h2 className="text-lg font-bold text-gray-900">Ingrédients</h2>
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {ingredients.map((ingredient) => (
             <div key={ingredient.id} className="flex gap-2 items-start">
               <div className="flex-1 grid grid-cols-2 gap-2">
@@ -295,7 +304,7 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
                   value={ingredient.name}
                   onChange={(e) => updateIngredient(ingredient.id, 'name', e.target.value)}
                   placeholder="Ingrédient"
-                  className="col-span-1 rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                  className="col-span-1 rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900"
                   required
                 />
                 <div className="col-span-1 flex gap-2">
@@ -305,13 +314,13 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
                       value={ingredient.amount}
                       onChange={(e) => updateIngredient(ingredient.id, 'amount', e.target.value)}
                       placeholder="Qté"
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                      className="w-full rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900"
                       required
                     />
                     <select
                       value={ingredient.unit}
                       onChange={(e) => updateIngredient(ingredient.id, 'unit', e.target.value)}
-                      className={`absolute right-0 top-0 h-full w-20 rounded-r-md border-l border-gray-300 bg-gray-50 px-2 text-gray-900`}
+                      className={`absolute right-0 top-0 h-10 w-20 rounded-r-md border-l border-gray-300 bg-gray-50 pl-3.5 pr-2.5 text-gray-900`}
                       required
                     >
                       <option value="g">g</option>
@@ -326,7 +335,7 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
               <button
                 type="button"
                 onClick={() => removeIngredient(ingredient.id)}
-                className="p-2 text-gray-400 hover:text-red-500"
+                className="h-10 px-2 text-gray-400 hover:text-red-500 flex items-center"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -343,52 +352,65 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
         </div>
       </section>
 
-      <section className="bg-white rounded-lg shadow-sm p-6 space-y-4">
+      <section className="bg-white rounded-lg shadow-sm p-3.5 space-y-3.5">
         <h2 className="text-lg font-bold text-gray-900">Étapes de préparation</h2>
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {steps.map((step, index) => (
-            <div key={step.id} className="flex gap-4 items-start">
-              <div className="flex-none">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-bold">
-                  {index + 1}
-                </span>
-              </div>
-              <div className="flex-1 space-y-2">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
+            <div key={step.id} className="flex gap-2 items-start">
+              <div className="flex-1">
+                <div className="relative">
+                  <textarea
                     value={step.description}
-                    onChange={(e) => updateStep(step.id, 'description', e.target.value)}
-                    placeholder={`Étape ${index + 1}`}
-                    className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                    onChange={(e) => {
+                      updateStep(step.id, 'description', e.target.value)
+                      e.target.style.height = 'auto'
+                      e.target.style.height = e.target.scrollHeight + 'px'
+                    }}
+                    placeholder="Description de l'étape"
+                    className="w-full rounded-md border border-gray-300 px-3.5 py-2.5 text-gray-900 pl-12 resize-none overflow-hidden min-h-[40px]"
                     required
+                    style={{ height: 'auto' }}
                   />
-                  <div className="flex gap-2 items-center">
+                  <span className="absolute left-3.5 top-2.5 text-blue-600 font-semibold">
+                    {index + 1}.
+                  </span>
+                </div>
+                {step.showTimer ? (
+                  <div className="mt-2 flex gap-2 items-center">
                     <div className="relative">
                       <input
                         type="number"
                         value={step.timer || ''}
                         onChange={(e) => updateStep(step.id, 'timer', parseInt(e.target.value) || 0)}
                         placeholder="Durée"
-                        className="w-32 rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                        className="w-32 rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900"
                         min="0"
                       />
                       <select
                         value={step.timerUnit || 'min'}
                         onChange={(e) => updateStep(step.id, 'timerUnit', e.target.value)}
-                        className={`absolute right-0 top-0 h-full w-20 rounded-r-md border-l border-gray-300 bg-gray-50 px-2 text-gray-900`}
+                        className="absolute right-0 top-0 h-10 w-20 rounded-r-md border-l border-gray-300 bg-gray-50 pl-3.5 pr-2.5 text-gray-900"
                       >
                         <option value="min">min</option>
                         <option value="hrs">hrs</option>
                       </select>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => updateStep(step.id, 'showTimer', true)}
+                    className="mt-2 flex items-center gap-1 text-sm text-gray-500 hover:text-blue-600"
+                  >
+                    <Clock className="w-4 h-4" />
+                    <span>Ajouter un minuteur</span>
+                  </button>
+                )}
               </div>
               <button
                 type="button"
                 onClick={() => removeStep(step.id)}
-                className="p-2 text-gray-400 hover:text-red-500"
+                className="h-10 px-2 text-gray-400 hover:text-red-500 flex items-center"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -431,13 +453,13 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
     -moz-appearance: none !important;
     appearance: none !important;
     background-image: none !important;
-    padding-right: 0.5rem !important;
+    padding-right: 0.625rem !important;
   }
   select:not(.appearance-none) {
     background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
-    background-position: right 0.5rem center;
+    background-position: right 0.625rem center;
     background-repeat: no-repeat;
     background-size: 1.5em 1.5em;
     padding-right: 2.5rem;
   }
-`}</style> 
+`}</style>
