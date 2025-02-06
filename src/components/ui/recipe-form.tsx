@@ -209,50 +209,76 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
             </select>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
-            <div>
+          <div className="space-y-3.5">
+            <div className="w-full">
               <label htmlFor="prepTime" className="block text-sm font-semibold text-gray-900">
-                Temps de préparation (min)
+                Temps de préparation
               </label>
-              <input
-                type="number"
-                name="prepTime"
-                id="prepTime"
-                required
-                min="0"
-                defaultValue={recipe.prepTime}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
-              />
+              <div className="mt-1 relative">
+                <input
+                  type="number"
+                  name="prepTime"
+                  id="prepTime"
+                  required
+                  min="0"
+                  defaultValue={recipe.prepTime}
+                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                />
+                <select
+                  name="prepTimeUnit"
+                  className="absolute right-0 top-0 h-full w-20 rounded-r-md border-l border-gray-300 bg-gray-50 px-2 text-gray-900"
+                >
+                  <option value="min">min</option>
+                  <option value="hrs">hrs</option>
+                </select>
+              </div>
             </div>
 
-            <div>
+            <div className="w-full">
               <label htmlFor="cookTime" className="block text-sm font-semibold text-gray-900">
-                Temps de cuisson (min)
+                Temps de cuisson
               </label>
-              <input
-                type="number"
-                name="cookTime"
-                id="cookTime"
-                required
-                min="0"
-                defaultValue={recipe.cookTime}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
-              />
+              <div className="mt-1 relative">
+                <input
+                  type="number"
+                  name="cookTime"
+                  id="cookTime"
+                  required
+                  min="0"
+                  defaultValue={recipe.cookTime}
+                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                />
+                <select
+                  name="cookTimeUnit"
+                  className="absolute right-0 top-0 h-full w-20 rounded-r-md border-l border-gray-300 bg-gray-50 px-2 text-gray-900"
+                >
+                  <option value="min">min</option>
+                  <option value="hrs">hrs</option>
+                </select>
+              </div>
             </div>
 
-            <div>
+            <div className="w-full">
               <label htmlFor="servings" className="block text-sm font-semibold text-gray-900">
                 Nombre de portions
               </label>
-              <input
-                type="number"
-                name="servings"
-                id="servings"
-                required
-                min="1"
-                defaultValue={recipe.servings}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
-              />
+              <div className="mt-1 relative">
+                <input
+                  type="number"
+                  name="servings"
+                  id="servings"
+                  required
+                  min="1"
+                  defaultValue={recipe.servings}
+                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                />
+                <select
+                  name="servingsUnit"
+                  className="absolute right-0 top-0 h-full w-20 rounded-r-md border-l border-gray-300 bg-gray-50 px-2 text-gray-900 appearance-none"
+                >
+                  <option value="pers">pers</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -273,7 +299,7 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
                   required
                 />
                 <div className="col-span-1 flex gap-2">
-                  <div className="flex-1">
+                  <div className="flex-1 relative">
                     <input
                       type="number"
                       value={ingredient.amount}
@@ -282,19 +308,19 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
                       className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
                       required
                     />
+                    <select
+                      value={ingredient.unit}
+                      onChange={(e) => updateIngredient(ingredient.id, 'unit', e.target.value)}
+                      className={`absolute right-0 top-0 h-full w-20 rounded-r-md border-l border-gray-300 bg-gray-50 px-2 text-gray-900`}
+                      required
+                    >
+                      <option value="g">g</option>
+                      <option value="kg">kg</option>
+                      <option value="ml">ml</option>
+                      <option value="L">L</option>
+                      <option value="p">p</option>
+                    </select>
                   </div>
-                  <select
-                    value={ingredient.unit}
-                    onChange={(e) => updateIngredient(ingredient.id, 'unit', e.target.value)}
-                    className="w-24 rounded-md border border-gray-300 px-3 py-2 text-gray-900 bg-gray-50"
-                    required
-                  >
-                    <option value="g">g</option>
-                    <option value="kg">kg</option>
-                    <option value="ml">ml</option>
-                    <option value="L">L</option>
-                    <option value="p">p</option>
-                  </select>
                 </div>
               </div>
               <button
@@ -338,22 +364,24 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
                     required
                   />
                   <div className="flex gap-2 items-center">
-                    <input
-                      type="number"
-                      value={step.timer || ''}
-                      onChange={(e) => updateStep(step.id, 'timer', parseInt(e.target.value) || 0)}
-                      placeholder="Durée"
-                      className="w-24 rounded-md border border-gray-300 px-3 py-2 text-gray-900"
-                      min="0"
-                    />
-                    <select
-                      value={step.timerUnit || 'min'}
-                      onChange={(e) => updateStep(step.id, 'timerUnit', e.target.value)}
-                      className="w-20 rounded-md border border-gray-300 px-3 py-2 text-gray-900 bg-gray-50"
-                    >
-                      <option value="min">min</option>
-                      <option value="hrs">hrs</option>
-                    </select>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        value={step.timer || ''}
+                        onChange={(e) => updateStep(step.id, 'timer', parseInt(e.target.value) || 0)}
+                        placeholder="Durée"
+                        className="w-32 rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                        min="0"
+                      />
+                      <select
+                        value={step.timerUnit || 'min'}
+                        onChange={(e) => updateStep(step.id, 'timerUnit', e.target.value)}
+                        className={`absolute right-0 top-0 h-full w-20 rounded-r-md border-l border-gray-300 bg-gray-50 px-2 text-gray-900`}
+                      >
+                        <option value="min">min</option>
+                        <option value="hrs">hrs</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -395,4 +423,21 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
       </div>
     </form>
   )
-} 
+}
+
+<style jsx global>{`
+  select.appearance-none {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    background-image: none !important;
+    padding-right: 0.5rem !important;
+  }
+  select:not(.appearance-none) {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+`}</style> 

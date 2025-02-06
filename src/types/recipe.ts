@@ -42,7 +42,7 @@ export interface Step {
   id: number
   description: string
   order: number
-  timer?: number
+  timer: number | null | undefined
   timerUnit?: string
   isCompleted?: boolean
   recipeId: number
