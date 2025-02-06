@@ -1,5 +1,7 @@
+'use client'
+
+import { Home, Book, Calendar, Heart } from 'lucide-react'
 import Link from 'next/link'
-import { Home, Book, Calendar, Heart, History } from 'lucide-react'
 
 export function BottomNav() {
   return (
@@ -20,10 +22,6 @@ export function BottomNav() {
         <Link href="/planning" className="flex flex-col items-center text-gray-600 hover:text-blue-600">
           <Calendar size={24} />
           <span className="text-xs mt-1">Planning</span>
-        </Link>
-        <Link href="/historique" className="flex flex-col items-center text-gray-600 hover:text-blue-600">
-          <History size={24} />
-          <span className="text-xs mt-1">Historique</span>
         </Link>
       </div>
     </nav>

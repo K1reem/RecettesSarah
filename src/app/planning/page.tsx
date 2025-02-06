@@ -75,30 +75,42 @@ export default function PlanningPage() {
           </div>
         </div>
       ) : (
-        <div className="space-y-3.5">
-          {scheduledRecipes.map((schedule) => (
-            <div key={schedule.id} className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-blue-600" />
-                <span className="text-sm text-gray-600">
-                  {new Date(schedule.date).toLocaleDateString('fr-FR', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                  })}
-                </span>
+        <>
+          <div className="space-y-3.5">
+            {scheduledRecipes.map((schedule) => (
+              <div key={schedule.id} className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm text-gray-600">
+                    {new Date(schedule.date).toLocaleDateString('fr-FR', {
+                      weekday: 'long',
+                      day: 'numeric',
+                      month: 'long',
+                    })}
+                  </span>
+                </div>
+                <Card
+                  recipe={schedule.recipe}
+                  showFavorite={true}
+                  showActions={true}
+                  onDelete={() => deleteSchedule(schedule.id)}
+                  actionIcon={<Trash2 className="w-4 h-4" />}
+                  actionTitle="Supprimer du planning"
+                />
               </div>
-              <Card
-                recipe={schedule.recipe}
-                showFavorite={true}
-                showActions={true}
-                onDelete={() => deleteSchedule(schedule.id)}
-                actionIcon={<Trash2 className="w-4 h-4" />}
-                actionTitle="Supprimer du planning"
-              />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+
+          <div className="mt-8 text-center">
+            <Link
+              href="/planning/nouveau"
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Planifier une autre recette
+            </Link>
+          </div>
+        </>
       )}
     </div>
   )
