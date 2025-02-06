@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, X, Clock } from 'lucide-react'
 import { ImageUpload } from '@/components/ui/image-upload'
+import { InputWithUnit } from './input-with-unit'
 
 interface Ingredient {
   id: number
@@ -219,108 +220,71 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
           </div>
 
           <div className="space-y-3.5">
-            <div className="w-full">
-              <label htmlFor="prepTime" className="block text-base font-semibold text-gray-900">
-                Temps de préparation
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  type="number"
-                  name="prepTime"
-                  id="prepTime"
-                  required
-                  min="0"
-                  defaultValue={recipe.prepTime}
-                  className="block w-full rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900"
-                />
-                <select
-                  name="prepTimeUnit"
-                  className="absolute right-0 top-0 h-10 w-20 rounded-r-md border-l border-gray-300 bg-gray-50 pl-3.5 pr-2.5 text-gray-900"
-                >
-                  <option value="min">min</option>
-                  <option value="hrs">hrs</option>
-                </select>
-              </div>
-            </div>
+            <InputWithUnit
+              label="Temps de préparation"
+              name="prepTime"
+              value={recipe.prepTime}
+              required
+              min={0}
+              options={[
+                { value: 'min', label: 'min' },
+                { value: 'hrs', label: 'hrs' }
+              ]}
+            />
 
-            <div className="w-full">
-              <label htmlFor="cookTime" className="block text-base font-semibold text-gray-900">
-                Temps de cuisson
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  type="number"
-                  name="cookTime"
-                  id="cookTime"
-                  required
-                  min="0"
-                  defaultValue={recipe.cookTime}
-                  className="block w-full rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900"
-                />
-                <select
-                  name="cookTimeUnit"
-                  className="absolute right-0 top-0 h-10 w-20 rounded-r-md border-l border-gray-300 bg-gray-50 pl-3.5 pr-2.5 text-gray-900"
-                >
-                  <option value="min">min</option>
-                  <option value="hrs">hrs</option>
-                </select>
-              </div>
-            </div>
+            <InputWithUnit
+              label="Temps de cuisson"
+              name="cookTime"
+              value={recipe.cookTime}
+              required
+              min={0}
+              options={[
+                { value: 'min', label: 'min' },
+                { value: 'hrs', label: 'hrs' }
+              ]}
+            />
 
-            <div className="w-full">
-              <label htmlFor="servings" className="block text-base font-semibold text-gray-900">
-                Nombre de portions
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  type="number"
-                  name="servings"
-                  id="servings"
-                  required
-                  min="1"
-                  defaultValue={recipe.servings}
-                  className="block w-full rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900"
-                />
-                <select
-                  name="servingsUnit"
-                  className="absolute right-0 top-0 h-10 w-20 rounded-r-md border-l border-gray-300 bg-gray-50 pl-3.5 pr-2.5 text-gray-900 appearance-none"
-                >
-                  <option value="pers">pers</option>
-                </select>
-              </div>
-            </div>
+            <InputWithUnit
+              label="Nombre de portions"
+              name="servings"
+              value={recipe.servings}
+              required
+              min={1}
+              options={[{ value: 'pers', label: 'pers' }]}
+              hideArrow
+            />
           </div>
         </div>
       </div>
 
       <section className="bg-white rounded-lg shadow-sm p-3.5 space-y-3.5">
         <h2 className="text-lg font-bold text-gray-900">Ingrédients</h2>
-        <div className="space-y-3.5">
-          {ingredients.map((ingredient) => (
-            <div key={ingredient.id} className="flex gap-2 items-start">
+        <div className="space-y-8">
+          {ingredients.map((ingredient, index) => (
+            <div key={ingredient.id} className="flex gap-8 items-start">
               <div className="flex-1 grid grid-cols-2 gap-2">
                 <input
                   type="text"
                   value={ingredient.name}
                   onChange={(e) => updateIngredient(ingredient.id, 'name', e.target.value)}
                   placeholder="Ingrédient"
-                  className="col-span-1 rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900"
+                  className="col-span-1 rounded-md border border-gray-300 px-3.5 py-2 text-gray-900"
                   required
                 />
                 <div className="col-span-1 flex gap-2">
-                  <div className="flex-1 relative">
+                  <div className="flex-1 relative flex">
                     <input
                       type="number"
                       value={ingredient.amount}
                       onChange={(e) => updateIngredient(ingredient.id, 'amount', e.target.value)}
                       placeholder="Qté"
-                      className="w-full rounded-md border border-gray-300 px-3.5 py-3.5 text-gray-900"
+                      className="w-full rounded-l-md border border-gray-300 px-3.5 py-2 text-gray-900"
                       required
                     />
                     <select
                       value={ingredient.unit}
                       onChange={(e) => updateIngredient(ingredient.id, 'unit', e.target.value)}
-                      className={`absolute right-0 top-0 h-10 w-20 rounded-r-md border-l border-gray-300 bg-gray-50 pl-3.5 pr-2.5 text-gray-900`}
+                      className="w-20 h-[42px] rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-2.5 text-gray-900"
                       required
                     >
                       <option value="g">g</option>
@@ -332,13 +296,15 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
                   </div>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => removeIngredient(ingredient.id)}
-                className="h-10 px-2 text-gray-400 hover:text-red-500 flex items-center"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              {index > 0 && (
+                <button
+                  type="button"
+                  onClick={() => removeIngredient(ingredient.id)}
+                  className="h-10 px-2 text-gray-400 hover:text-red-500 flex items-center"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
             </div>
           ))}
           <button
@@ -354,9 +320,9 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
 
       <section className="bg-white rounded-lg shadow-sm p-3.5 space-y-3.5">
         <h2 className="text-lg font-bold text-gray-900">Étapes de préparation</h2>
-        <div className="space-y-3.5">
+        <div className="space-y-8">
           {steps.map((step, index) => (
-            <div key={step.id} className="flex gap-2 items-start">
+            <div key={step.id} className="flex gap-8 items-start">
               <div className="flex-1">
                 <div className="relative">
                   <textarea
@@ -407,13 +373,15 @@ export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeF
                   </button>
                 )}
               </div>
-              <button
-                type="button"
-                onClick={() => removeStep(step.id)}
-                className="h-10 px-2 text-gray-400 hover:text-red-500 flex items-center"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              {index > 0 && (
+                <button
+                  type="button"
+                  onClick={() => removeStep(step.id)}
+                  className="h-10 px-2 text-gray-400 hover:text-red-500 flex items-center"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
             </div>
           ))}
           <button
