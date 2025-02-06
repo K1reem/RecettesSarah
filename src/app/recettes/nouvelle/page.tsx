@@ -1,11 +1,12 @@
 import { prisma } from '@/lib/prisma'
-import { RecipeForm } from './recipe-form'
+import { PageTitle } from '@/components/ui/page-title'
+import { RecipeForm } from '@/components/ui/recipe-form'
 
 async function getCategories() {
-  return await prisma.category.findMany({
+  return prisma.category.findMany({
     orderBy: {
-      name: 'asc'
-    }
+      name: 'asc',
+    },
   })
 }
 
@@ -13,11 +14,9 @@ export default async function NewRecipePage() {
   const categories = await getCategories()
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Nouvelle recette</h1>
-        <RecipeForm categories={categories} />
-      </div>
+    <div className="container mx-auto px-4 py-4">
+      <PageTitle showBack>Nouvelle recette</PageTitle>
+      <RecipeForm categories={categories} mode="create" />
     </div>
   )
 } 

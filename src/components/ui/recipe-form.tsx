@@ -21,7 +21,7 @@ interface Step {
 }
 
 interface Recipe {
-  id: number
+  id?: number
   title: string
   imageUrl: string | null
   categoryId: number
@@ -33,20 +33,31 @@ interface Recipe {
 }
 
 interface RecipeFormProps {
-  recipe: Recipe
+  recipe?: Partial<Recipe>
   categories: Category[]
+  mode: 'create' | 'edit'
 }
 
-export function RecipeForm({ recipe, categories }: RecipeFormProps) {
+const defaultRecipe: Recipe = {
+  title: '',
+  imageUrl: null,
+  categoryId: 0,
+  prepTime: 0,
+  cookTime: 0,
+  servings: 4,
+  ingredients: [{ id: 1, name: '', amount: '', unit: 'p' }],
+  steps: [{ id: 1, description: '', timer: undefined, timerUnit: 'min' }]
+}
+
+export function RecipeForm({ recipe = defaultRecipe, categories, mode }: RecipeFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [ingredients, setIngredients] = useState<Ingredient[]>(
-    recipe.ingredients.map(i => ({
-      ...i,
-      amount: i.amount.toString()
-    }))
+    recipe.ingredients || defaultRecipe.ingredients
   )
-  const [steps, setSteps] = useState<Step[]>(recipe.steps)
+  const [steps, setSteps] = useState<Step[]>(
+    recipe.steps || defaultRecipe.steps
+  )
   const [imageFile, setImageFile] = useState<File | null>(null)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -54,12 +65,10 @@ export function RecipeForm({ recipe, categories }: RecipeFormProps) {
     setIsSubmitting(true)
 
     try {
-      // Récupérer les données du formulaire
       const formElement = event.currentTarget
       const formData = new FormData(formElement)
-      let imageUrl = recipe.imageUrl
+      let imageUrl = recipe.imageUrl || null
 
-      // Gérer l'upload de l'image si une nouvelle image est sélectionnée
       if (imageFile) {
         const imageFormData = new FormData()
         imageFormData.append('file', imageFile)
@@ -75,7 +84,6 @@ export function RecipeForm({ recipe, categories }: RecipeFormProps) {
         imageUrl = imageData.url
       }
 
-      // Créer l'objet de données de la recette
       const recipeData = {
         title: formData.get('title'),
         categoryId: parseInt(formData.get('categoryId') as string),
@@ -96,9 +104,11 @@ export function RecipeForm({ recipe, categories }: RecipeFormProps) {
         }))
       }
 
-      // Envoyer les données de la recette
-      const response = await fetch(`/api/recipes/${recipe.id}`, {
-        method: 'PUT',
+      const url = mode === 'create' ? '/api/recipes' : `/api/recipes/${recipe.id}`
+      const method = mode === 'create' ? 'POST' : 'PUT'
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -107,14 +117,15 @@ export function RecipeForm({ recipe, categories }: RecipeFormProps) {
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.message || 'Erreur lors de la modification de la recette')
+        throw new Error(error.message || `Erreur lors de la ${mode === 'create' ? 'création' : 'modification'} de la recette`)
       }
 
-      router.push(`/recettes/${recipe.id}`)
+      const savedRecipe = await response.json()
+      router.push(mode === 'create' ? '/recettes' : `/recettes/${recipe.id}`)
       router.refresh()
     } catch (error) {
       console.error('Erreur:', error)
-      alert(error instanceof Error ? error.message : "Une erreur s'est produite lors de la modification de la recette")
+      alert(error instanceof Error ? error.message : `Une erreur s'est produite lors de la ${mode === 'create' ? 'création' : 'modification'} de la recette`)
     } finally {
       setIsSubmitting(false)
     }
@@ -122,7 +133,7 @@ export function RecipeForm({ recipe, categories }: RecipeFormProps) {
 
   const addIngredient = () => {
     const newId = ingredients.length > 0 ? Math.max(...ingredients.map(i => i.id)) + 1 : 1
-    setIngredients([...ingredients, { id: newId, name: '', amount: '', unit: '' }])
+    setIngredients([...ingredients, { id: newId, name: '', amount: '', unit: 'p' }])
   }
 
   const removeIngredient = (id: number) => {
@@ -139,7 +150,7 @@ export function RecipeForm({ recipe, categories }: RecipeFormProps) {
 
   const addStep = () => {
     const newId = steps.length > 0 ? Math.max(...steps.map(s => s.id)) + 1 : 1
-    setSteps([...steps, { id: newId, description: '', timer: undefined, timerUnit: undefined }])
+    setSteps([...steps, { id: newId, description: '', timer: undefined, timerUnit: 'min' }])
   }
 
   const removeStep = (id: number) => {
@@ -158,7 +169,7 @@ export function RecipeForm({ recipe, categories }: RecipeFormProps) {
     <form onSubmit={handleSubmit} className="space-y-3.5">
       <div className="bg-white rounded-lg shadow-sm p-3.5">
         <ImageUpload
-          imageUrl={recipe.imageUrl}
+          imageUrl={recipe.imageUrl ?? null}
           onImageChange={(file) => setImageFile(file)}
           className="mb-3.5"
         />
@@ -275,14 +286,14 @@ export function RecipeForm({ recipe, categories }: RecipeFormProps) {
                   <select
                     value={ingredient.unit}
                     onChange={(e) => updateIngredient(ingredient.id, 'unit', e.target.value)}
-                    className="w-24 rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                    className="w-24 rounded-md border border-gray-300 px-3 py-2 text-gray-900 bg-gray-50"
                     required
                   >
                     <option value="g">g</option>
                     <option value="kg">kg</option>
                     <option value="ml">ml</option>
                     <option value="L">L</option>
-                    <option value="pièce">pièce</option>
+                    <option value="p">p</option>
                   </select>
                 </div>
               </div>
@@ -338,7 +349,7 @@ export function RecipeForm({ recipe, categories }: RecipeFormProps) {
                     <select
                       value={step.timerUnit || 'min'}
                       onChange={(e) => updateStep(step.id, 'timerUnit', e.target.value)}
-                      className="w-20 rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+                      className="w-20 rounded-md border border-gray-300 px-3 py-2 text-gray-900 bg-gray-50"
                     >
                       <option value="min">min</option>
                       <option value="hrs">hrs</option>
@@ -379,7 +390,7 @@ export function RecipeForm({ recipe, categories }: RecipeFormProps) {
           disabled={isSubmitting}
           className="flex-1 py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? 'Modification en cours...' : 'Modifier la recette'}
+          {isSubmitting ? (mode === 'create' ? 'Création en cours...' : 'Modification en cours...') : (mode === 'create' ? 'Créer la recette' : 'Modifier la recette')}
         </button>
       </div>
     </form>

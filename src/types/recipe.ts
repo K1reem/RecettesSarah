@@ -42,8 +42,9 @@ export interface Step {
   id: number
   description: string
   order: number
-  isCompleted: boolean
-  timer?: number | null
+  timer?: number
+  timerUnit?: string
+  isCompleted?: boolean
   recipeId: number
 }
 
