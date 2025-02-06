@@ -1,10 +1,11 @@
 import { prisma } from '@/lib/prisma'
-import { ArrowLeft, Clock, Users, Edit, Trash2 } from 'lucide-react'
-import Link from 'next/link'
+import { Clock, Users } from 'lucide-react'
 import { notFound } from 'next/navigation'
-import { FavoriteButton, StartCookingButton, DeleteButton } from '.'
+import { FavoriteButton, StartCookingButton } from '.'
 import { PageTitle } from '@/components/ui/page-title'
 import { RecipeImage } from '@/components/ui/recipe-image'
+import { RecipeActions } from '@/components/ui/recipe-actions'
+import { SectionTitle } from '@/components/ui/section-title'
 import { Ingredient, Step } from '@/types/recipe'
 
 async function getRecipe(id: string) {
@@ -32,40 +33,21 @@ export default async function RecipePage({ params }: { params: { id: string } })
   const recipe = await getRecipe(params.id)
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-4">
       <div className="space-y-3.5">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/recettes"
-            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100"
-          >
-            <ArrowLeft className="w-6 h-6" />
-            <span className="sr-only">Retour</span>
-          </Link>
-          <div className="flex-1">
-            <PageTitle>{recipe.title}</PageTitle>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href={`/recettes/${recipe.id}/modifier`}
-              className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100"
-              title="Modifier la recette"
-            >
-              <Edit className="w-5 h-5 text-gray-600" />
-            </Link>
-            <DeleteButton recipeId={recipe.id} />
-            <FavoriteButton recipeId={recipe.id} isFavorite={recipe.isFavorite} />
-          </div>
-        </div>
+        <PageTitle 
+          showBack 
+          action={<FavoriteButton recipeId={recipe.id} isFavorite={recipe.isFavorite} />}
+        >
+          {recipe.title}
+        </PageTitle>
 
-        <div className="space-y-3.5">
-          <RecipeImage
-            imageUrl={recipe.imageUrl}
-            title={recipe.title}
-          />
+        <StartCookingButton steps={recipe.steps} />
 
-          <StartCookingButton steps={recipe.steps} />
-        </div>
+        <RecipeImage
+          imageUrl={recipe.imageUrl}
+          title={recipe.title}
+        />
 
         <div className="bg-white rounded-lg shadow-sm p-3.5">
           <div className="flex items-center justify-between">
@@ -87,7 +69,7 @@ export default async function RecipePage({ params }: { params: { id: string } })
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-3.5 space-y-3.5">
-          <h2 className="text-lg font-bold text-gray-900">Ingrédients</h2>
+          <SectionTitle>Ingrédients</SectionTitle>
           <ul className="divide-y divide-gray-100">
             {recipe.ingredients.map((ingredient: Ingredient) => (
               <li key={ingredient.id} className="py-3 flex items-center justify-between">
@@ -101,7 +83,7 @@ export default async function RecipePage({ params }: { params: { id: string } })
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-3.5 space-y-3.5">
-          <h2 className="text-lg font-bold text-gray-900">Préparation</h2>
+          <SectionTitle>Préparation</SectionTitle>
           <div className="space-y-3.5">
             {recipe.steps.map((step: Step) => (
               <div key={step.id} className="flex gap-4">
@@ -123,6 +105,8 @@ export default async function RecipePage({ params }: { params: { id: string } })
             ))}
           </div>
         </div>
+
+        <RecipeActions recipeId={recipe.id} />
       </div>
     </div>
   )

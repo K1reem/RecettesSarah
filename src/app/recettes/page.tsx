@@ -1,8 +1,8 @@
 'use client'
 
-import { Card } from '@/components/ui/card'
 import { useState, useEffect } from 'react'
 import { PageTitle } from '@/components/ui/page-title'
+import { RecipeCard } from '@/components/ui/recipe-card'
 
 interface Recipe {
   id: number
@@ -11,7 +11,6 @@ interface Recipe {
   prepTime: number
   cookTime: number
   servings: number
-  isFavorite: boolean
   category: {
     name: string
   }
@@ -37,12 +36,12 @@ export default function RecipesPage() {
   }, [])
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-4">
       <PageTitle>Mes Recettes</PageTitle>
       
-      <div className="space-y-3.5">
+      <div className="space-y-4">
         {recipes.map((recipe) => (
-          <Card key={recipe.id} recipe={recipe} />
+          <RecipeCard key={recipe.id} recipe={recipe} />
         ))}
 
         {recipes.length === 0 && (
